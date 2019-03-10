@@ -1,0 +1,30 @@
+{
+  "name": "sattjs",
+  "version": "1.0.0",
+  "description": "Satt smart contract  Javascript library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Atayen/satt-js.git"
+  },
+  "keywords": [
+    "satt",
+    "web3",
+    "js",
+    "smart",
+    "contract",
+    "ethereum",
+    "blockchain",
+    "advertising",
+    "campaign"
+  ],
+  "author": "Geoffrey MOYA",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Atayen/satt-js/issues"
+  },
+  "homepage": "https://github.com/Atayen/satt-js#readme"
+}
