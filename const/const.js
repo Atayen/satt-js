@@ -1,6 +1,6 @@
 var Constants = {
 	oracle : { 
-		address : "0x6cd13f1ca8758cb7b264cbc7674f2b5fa1f4ef1c",
+		address : {mainnet:"0x6cd13f1ca8758cb7b264cbc7674f2b5fa1f4ef1c",rinkeby:"0x0"},
 		abi : [
 			{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
 			{"constant":false,"inputs":[{"name":"a","type":"address"},{"name":"allow","type":"bool"}],"name":"changeAsk","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
@@ -15,7 +15,7 @@ var Constants = {
 		]
 	},
 	campaign : { 
-		address : "0x73b9a4c9dca22402ae685b3838ac1682b06ef774",
+		address : {mainnet:"0x73b9a4c9dca22402ae685b3838ac1682b06ef774",rinkeby:"0x0"},
 		abi : [
 			{"constant":true,"inputs":[{"name":"idCampaign","type":"bytes32"}],"name":"getProms","outputs":[{"name":"cproms","type":"bytes32[]"}],"payable":false,"stateMutability":"view","type":"function"},
 			{"constant":false,"inputs":[{"name":"idCampaign","type":"bytes32"}],"name":"endCampaign","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
@@ -52,8 +52,9 @@ var Constants = {
 			{"anonymous":false,"inputs":[{"indexed":true,"name":"id","type":"bytes32"},{"indexed":true,"name":"prom","type":"bytes32"}],"name":"CampaignApplied","type":"event"}
 		]
 	},
-	token : { address : "0x47333a2dfc39ca1802c4220d8fc8db830abea5b6",
-	abi : [
+	token : {
+		address : {mainnet:"0x47333a2dfc39ca1802c4220d8fc8db830abea5b6",rinkeby:"0x0"},
+		abi : [
 			{"constant":false,"inputs":[{"name":"newSellPrice","type":"uint256"},{"name":"newBuyPrice","type":"uint256"}],"name":"setPrices","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
 			{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},
 			{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},
