@@ -38,10 +38,10 @@ CampaignManager.prototype.createCampaign = async (dataUrl,startDate,endDate,opts
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.createCampaign(dataUrl,parseInt(startDate),parseInt(endDate)).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("createCampaign error:",error);
 				reject(error);
@@ -72,10 +72,10 @@ CampaignManager.prototype.createCampaignYt = async function (dataUrl,startDate,e
 		if(!self._started) 
 			reject({error:"provider engine not started"});
 		
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.CreatePriceFundYt(dataUrl,parseInt(startDate),parseInt(endDate),likeRatio,viewRatio,token,amount).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("createCampaignYt error:",error);
 				reject(error);
@@ -103,10 +103,10 @@ CampaignManager.prototype.modCampaign = async function (idCampaign,dataUrl,start
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.modCampaign(idCampaign,dataUrl,startDate,endDate).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("modCampaign error:",error);
 				reject(error);
@@ -135,10 +135,10 @@ CampaignManager.prototype.fundCampaign = async function (idCampaign,token,amount
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.fundCampaign(idCampaign,token,amount).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("fundCampaign error:",error);
 				reject(error);
@@ -167,13 +167,13 @@ CampaignManager.prototype.priceRatioCampaign = async function (idCampaign,typeSN
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.priceRatioCampaign(idCampaign,typeSN,likeRatio,shareRatio,viewRatio).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("priceRatioCampaign error:",error);
 				reject(error);
 			});
 		}
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
 		self._campaignContract.methods.priceRatioCampaign(idCampaign,typeSN,likeRatio,shareRatio,viewRatio)
@@ -199,13 +199,13 @@ CampaignManager.prototype.applyCampaign = async function (idCampaign,typeSN,idPo
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.applyCampaign(idCampaign,typeSN,idPost,idUser).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("applyCampaign error:",error);
 				reject(error);
 			});
 		}
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
 		self._campaignContract.methods.applyCampaign(idCampaign,typeSN,idPost,idUser)
@@ -233,13 +233,13 @@ CampaignManager.prototype.validateProm = async function (idProm,opts) {
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.validateProm(idProm).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("validateProm error:",error);
 				reject(error);
 			});
 		}
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
 		self._campaignContract.methods.validateProm(idProm)
@@ -264,13 +264,13 @@ CampaignManager.prototype.startCampaign = async function (idCampaign,opts) {
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.startCampaign(idCampaign).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("startCampaign error:",error);
 				reject(error);
 			});
 		}
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
 		self._campaignContract.methods.startCampaign(idCampaign)
@@ -295,13 +295,13 @@ CampaignManager.prototype.updateCampaignStats = async function (idCampaign,opts)
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.updateCampaignStats(idCampaign).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("updateCampaignStats error:",error);
 				reject(error);
 			});
 		}
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
 		self._campaignContract.methods.updateCampaignStats(idCampaign)
@@ -326,13 +326,13 @@ const self = this;
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.endCampaign(idCampaign).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("endCampaign error:",error);
 				reject(error);
 			});
 		}
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice =await self._web3.eth.getGasPrice();
 		}
 		self._campaignContract.methods.endCampaign(idCampaign)
@@ -357,13 +357,13 @@ CampaignManager.prototype.getGains = async function (idProm,opts) {
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.getGains(idProm).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("getGains error:",error);
 				reject(error);
 			});
 		}
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice = await self._web3.eth.getGasPrice();
 		}
 		self._campaignContract.methods.getGains(idProm)
@@ -388,13 +388,13 @@ CampaignManager.prototype.getRemainingFunds = async function (idCampaign,opts) {
 	return new Promise(async (resolve, reject) => {
 		if(!self._started) 
 			reject({error:"provider engine not started"});
-		if(!(gas in opts)) {
+		if(!('gas' in opts)) {
 			opts.gas = await self._campaignContract.methods.getRemainingFunds(idCampaign).estimateGas({from:opts.from,value:0}).catch(function(error) {
 				console.log("getRemainingFunds error:",error);
 				reject(error);
 			});
 		}
-		if(!(gasPrice in opts)) {
+		if(!('gasPrice' in opts)) {
 			opts.gasPrice = await self._web3.eth.getGasPrice();
 		}
 		self._campaignContract.methods.getRemainingFunds(idCampaign)
