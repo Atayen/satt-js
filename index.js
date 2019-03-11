@@ -32,18 +32,21 @@ CampaignManager.prototype.init = () => {
 	self._started = true;
 }
 
-camapignManager.prototype.createCampaign = async (dataUrl,startDate,endDate,credentials) => {
+camapignManager.prototype.createCampaign = async (dataUrl,startDate,endDate,address) => {
 	const self = this;
+		
 	return new Promise(async (resolve, reject) => {
+		if(!self._started) 
+			reject({error:"provider engine not started"});
 		var gasPrice = await self._web3.eth.getGasPrice();
-		var gas = await self._campaignContract.methods.createCampaign(dataUrl,parseInt(startDate),parseInt(endDate)).estimateGas({from:credentials.address,value:0}).catch(function(error) {
+		var gas = await self._campaignContract.methods.createCampaign(dataUrl,parseInt(startDate),parseInt(endDate)).estimateGas({from:address,value:0}).catch(function(error) {
 			console.log("createCampaign error:",error);
 			reject(error);
 		});
 			
 		self._campaignContract.methods.createCampaign(dataUrl,startDate,endDate)
 		.send({
-		   from:credentials.address,
+		   from:address,
 		   gas:gas,
 		   gasPrice: gasPrice
 		   })
@@ -52,7 +55,8 @@ camapignManager.prototype.createCampaign = async (dataUrl,startDate,endDate,cred
 		   })
 		.on('transactionHash', function(transactionHash){console.log("createCampaign transactionHash",transactionHash) })
 		.on('receipt', function(receipt){
-			resolve(receipt.events.CampaignCreated.returnValues.id);
+			var returnValues = receipt.events.CampaignCreated.returnValues;
+			resolve( new Campaign (returnValues.id,returnValues.dataUrl,returnValues.startDate,returnValues.endDate)) ;
 			console.log(receipt.transactionHash,"confirmed campaign created",receipt.events.CampaignCreated.returnValues.id);
 		})
 		.on('confirmation', function(confirmationNumber, receipt){ 
