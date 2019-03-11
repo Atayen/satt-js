@@ -10,6 +10,22 @@ function Campaign(id,url,start,end) {
 	self._end = end;
 }
 
+function Prom(id,type,post,user) {
+	const self = this;
+	self._id = id;
+	self._type = type;
+	self._post = post;
+	self._user = user;
+}
+
+function Result(id,likes,shares,views) {
+	const self = this;
+	self._id = id;
+	self._likes = likes;
+	self._shares = shares;
+	self._views = views;
+}
+
 function CampaignManager() {
 	const self = this;
 	self._started = false;
@@ -29,6 +45,7 @@ CampaignManager.prototype.init = () => {
 	self._provider.start();
 	self._web3 = new Web3(self._provider);
 	self._campaignContract = new self._web3.eth.Contract(Constants.campaign.abi,Constants.campaign.address.mainnet);
+	self._tokenContract = new self._web3.eth.Contract(Constants.token.abi,Constants.token.address.mainnet);
 	self._started = true;
 }
 
@@ -413,6 +430,173 @@ CampaignManager.prototype.getRemainingFunds = async function (idCampaign,opts) {
 	})
 	
 }
+
+CampaignManager.prototype.on = async (type,filter,callback) => {
+	const self = this;
+	switch (type) {
+		case "created" : 
+			self._campaignContract.events.CampaignCreated (filter,callback);
+		break;
+		case "applied" : 
+			self._campaignContract.events.CampaignApplied (filter,callback);
+		break;
+		case "spent" : 
+			self._campaignContract.events.CampaignFundsSpent (filter,callback);
+		break;
+		default : 
+		break;
+	}
+} 
+
+
+CampaignManager.prototype.getCampaign = async (id) => {
+	const self = this;
+	var res = await self._campaignContract.methods.campaigns(id).call();
+	var c = new Campaign(id,res.dataUrl,res.startDate,res.endDate);
+	c._advertiser = res.advertiser;
+	c._nbProms = res.nbProms;
+	c._nbValidProms = res.nbValidProms;
+	c._funds = res.funds;
+	c._campaignContract = self._campaignContract;
+	return c;	
+}
+
+Campaign.prototype.getRatios = async () => {
+	const self = this;
+	var ratios = await self._campaignContract.methods.getRatios(self._id).call();
+	var types = results[0];
+	var likes = results[1];
+	var shares = results[2];
+	var views = results[3];
+	var res = [{typeSN:types[0],likeRatio:likes[0],shareRatio:shares[0],viewRatio:views[0]},{typeSN:types[1],likeRatio:likes[1],shareRatio:shares[1],viewRatio:views[1]},{typeSN:types[2],likeRatio:likes[2],shareRatio:shares[2],viewRatio:views[2]},{typeSN:types[3],likeRatio:likes[3],shareRatio:shares[3],viewRatio:views[3]}];
+	return res;
+}
+
+Campaign.prototype.getProms = async () => {
+	const self = this;
+	var res = await self._campaignContract.methods.getProms(self._id).call();
+	var finalRes = [];
+	for (var i=0;i<res.length;i++) {
+		var promres = await self._campaignContract.methods.proms(res[i]).call();
+		var prom = new Prom(res[i],promres.typeSN,promres.idPost,promres.idUser);
+		prom._influencer = promres.influencer;
+		prom._isAccepted = promres.isAccepted;
+		prom._funds = promres.funds;
+		prom._nbResults = promres.nbResults;
+		prom._lastResult = promres.lastResult;
+		prom._campaignContract = self._campaignContract;
+		finalRes.push(prom)
+	}
+	return finalRes;
+}
+
+Prom.prototype.getResults = async () => {
+	const self = this;
+	var res = await self._campaignContract.methods.getResults(self._id).call();
+	var finalRes = [];
+	for (var i=0;i<res.length;i++) {
+		var resres = await self._campaignContract.methods.results(res[i]).call();
+		var result = new Result(res[i],resres.likes,resres.shares,resres.views);
+		finalRes.push(res)
+	}
+	return finalRes;
+}
+
+Campaign.prototype.toJSON = async () => {
+	const self = this;
+	var res = {
+		id:self._id,
+		url:self._url,
+		start:self._start,
+		end:self._end,
+		advertiser:self._advertiser,
+		nbProms:self._nbProms,
+		nbValidProms:self._nbValidProms,
+		funds:{tokenAddress:self._funds[0],amount:self._funds[1]},
+	}
+	res.ratios = await self.getRatios();
+	var proms = await self.getProms();
+	res.proms = [];
+	for(var i=0;i<proms.length;i++)
+	{
+		res.proms.push(await proms[i].toJSON());
+	}
+	return res;
+}
+
+Prom.prototype.toJSON = async () => {
+	const self = this;
+	var res = {
+		id:self._id,
+		type:self._type,
+		post:self._post,
+		user:self._user,	
+		influencer:self._influencer,
+		nbResults:self._nbProms,
+		isAccepted:self._nbValidProms,
+		lastResult:self._lastResult,
+		funds:{tokenAddress:self._funds[0],amount:self._funds[1]}
+	}
+	var results = await self.getResults();
+	res.results = [];
+	for(var i=0;i<results.length;i++)
+	{
+		res.results.push(await results[i].toJSON());
+	}
+	
+	return res;
+}
+
+Result.prototype.toJSON = async () => {
+	const self = this;
+	var res = {
+		id:self._id,
+		likes:self._likes,
+		shares:self._shares,
+		views:self._views
+	}
+	return res;
+	
+}
+
+CampaignManager.prototype.getApproval = async (addr) => {
+	const self = this;
+	return new Promise(async (resolve, reject) => {
+		var amount = await self._tokenContract.methods.allowance(addr,Constants.token.address.mainnet).call();
+		resolve({amount:amount});
+		
+	});
+}
+
+CampaignManager.prototype.setApproval = async (opts) => {
+	const self = this;
+	var spender = Constants.token.address.mainnet;
+	return new Promise(async (resolve, reject) => {
+		if(!('gasPrice' in opts)) {
+			opts.gasPrice = await self._web3.eth.getGasPrice();
+		}
+		var amount = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+		if(!('gas' in opts)) {
+			opts.gas = await self._tokenContract.methods.approve(opts.from,amount).estimateGas();
+		}
+			
+		tokenManager.contract.methods.approve(opts.from,amount)
+		.send(opts)
+		   .on('error', function(error){ console.log("approve error",error) })
+		.on('transactionHash', function(transactionHash){
+			console.log("approve transactionHash",transactionHash) 
+			//callback(transactionHash);
+		})
+		.on('receipt', function(receipt){
+			resolve({transactionHash:receipt.transactionHash,address:opts.from,spender:spender});
+			console.log(receipt.transactionHash,"confirmed approval from",opts.from,"to",spender); 
+		})
+		.on('confirmation', function(confirmationNumber, receipt){ 
+			//console.log("confirmation "+confirmationNumber) ;
+		})
+	});
+}
+
 
 
 module.exports = CampaignManager;
