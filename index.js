@@ -73,7 +73,8 @@ CampaignManager.prototype.createCampaign = async (dataUrl,startDate,endDate,opts
 		.on('transactionHash', function(transactionHash){console.log("createCampaign transactionHash",transactionHash) })
 		.on('receipt', function(receipt){
 			var returnValues = receipt.events.CampaignCreated.returnValues;
-			resolve( new Campaign (returnValues.id,returnValues.dataUrl,returnValues.startDate,returnValues.endDate)) ;
+			var c = await self.getCampaign(returnValues.id);
+			resolve(c) ;
 			console.log(receipt.transactionHash,"confirmed campaign created",receipt.events.CampaignCreated.returnValues.id);
 		})
 		.on('confirmation', function(confirmationNumber, receipt){ 
@@ -106,7 +107,8 @@ CampaignManager.prototype.createCampaignYt = async function (dataUrl,startDate,e
 		   })
 		.on('transactionHash', function(transactionHash){console.log("createCampaignYt transactionHash",transactionHash) })
 		.on('receipt', function(receipt){
-			resolve(receipt.events.CampaignCreated.returnValues.id);
+			var c = await self.getCampaign(receipt.events.CampaignCreated.returnValues.id);
+			resolve(c);
 			console.log(receipt.transactionHash,"confirmed campaign created",receipt.events.CampaignCreated.returnValues.id);
 		})
 		.on('confirmation', function(confirmationNumber, receipt){ 
@@ -232,8 +234,8 @@ CampaignManager.prototype.applyCampaign = async function (idCampaign,typeSN,idPo
 		   })
 		.on('transactionHash', function(transactionHash){console.log("applyCampaign transactionHash",transactionHash) })
 		.on('receipt', function(receipt){
-			var prom = receipt.events.CampaignApplied.returnValues.prom;
-			resolve({transactionHash:receipt.transactionHash,idCampaign:idCampaign,typeSN:typeSN,idPost:idPost,idUser:idUser,idProm:prom});
+			var prom = await self.getProm(receipt.events.CampaignApplied.returnValues.prom);
+			resolve(prom);
 			//callback({"result":"OK"});
 			console.log(receipt.transactionHash,"confirmed",idCampaign," prom ",prom);
 			//console.log(receipt.events);
@@ -461,6 +463,27 @@ CampaignManager.prototype.getCampaign = async (id) => {
 	return c;	
 }
 
+CampaignManager.prototype.getProm = async (id) => {
+	const self = this;
+	var res = await self._campaignContract.methods.proms(id).call();
+	var prom = new Prom(res[i],promres.typeSN,promres.idPost,promres.idUser);
+	prom._influencer = promres.influencer;
+	prom._isAccepted = promres.isAccepted;
+	prom._funds = promres.funds;
+	prom._nbResults = promres.nbResults;
+	prom._lastResult = promres.lastResult;
+	prom._campaignContract = self._campaignContract;
+	return prom;	
+}
+
+CampaignManager.prototype.getResult = async (id) => {
+	const self = this;
+	var resres = await self._campaignContract.methods.results(id).call();
+	var result = new Result(res[i],resres.likes,resres.shares,resres.views);
+	result._campaignContract = self._campaignContract;
+	return result;	
+}
+
 Campaign.prototype.getRatios = async () => {
 	const self = this;
 	var ratios = await self._campaignContract.methods.getRatios(self._id).call();
@@ -500,6 +523,18 @@ Prom.prototype.getResults = async () => {
 		finalRes.push(res)
 	}
 	return finalRes;
+}
+
+Campaign.prototype.getId() = async () => {
+	return this._id;
+}
+
+Prom.prototype.getId() = async () => {
+	return this._id;
+}
+
+Result.prototype.getId() = async () => {
+	return this._id;
 }
 
 Campaign.prototype.toJSON = async () => {
