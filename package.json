@@ -1,5 +1,5 @@
 {
-  "name": "sattjs",
+  "name": "satt-js",
   "version": "1.0.0",
   "description": "Satt smart contract  Javascript library",
   "main": "index.js",
