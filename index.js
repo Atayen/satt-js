@@ -62,13 +62,13 @@ function CampaignManager() {
 				opts.gasPrice =await self._web3.eth.getGasPrice();
 			}
 			if(!('gas' in opts)) {
-				opts.gas = await self._campaignContract.methods.CreatePriceFundYt(dataUrl,parseInt(startDate),parseInt(endDate),likeRatio,viewRatio,token,amount).estimateGas({from:opts.from,value:0}).catch(function(error) {
+				opts.gas = await self._campaignContract.methods.createPriceFundYt(dataUrl,parseInt(startDate),parseInt(endDate),likeRatio,viewRatio,token,amount).estimateGas({from:opts.from,value:0}).catch(function(error) {
 					console.log("createCampaignYt error:",error);
 					reject(error);
 				});
 			}
 				
-			self._campaignContract.methods.CreatePriceFundYt(dataUrl,startDate,endDate,likeRatio,viewRatio,token,amount)
+			self._campaignContract.methods.createPriceFundYt(dataUrl,parseInt(startDate),parseInt(endDate),likeRatio,viewRatio,token,amount)
 			.send(opts)
 			.on('error', function(error){ console.log("createCampaignYt error",error);
 					reject(error);
@@ -93,13 +93,13 @@ function CampaignManager() {
 				opts.gasPrice =await self._web3.eth.getGasPrice();
 			}
 			if(!('gas' in opts)) {
-				opts.gas = await self._campaignContract.methods.modCampaign(idCampaign,dataUrl,startDate,endDate).estimateGas({from:opts.from,value:0}).catch(function(error) {
+				opts.gas = await self._campaignContract.methods.modCampaign(idCampaign,dataUrl,parseInt(startDate),parseInt(endDate)).estimateGas({from:opts.from,value:0}).catch(function(error) {
 					console.log("modCampaign error:",error);
 					reject(error);
 				});
 			}
 					
-			self._campaignContract.methods.modCampaign(idCampaign,dataUrl,startDate,endDate)
+			self._campaignContract.methods.modCampaign(idCampaign,dataUrl,parseInt(startDate),parseInt(endDate))
 			.send(opts)
 			   .on('error', function(error){ console.log("modCampaign error",error);
 					reject(error);
@@ -457,7 +457,7 @@ function CampaignManager() {
 				opts.gas = await self._tokenContract.methods.approve(opts.from,amount).estimateGas();
 			}
 				
-			tokenManager.contract.methods.approve(opts.from,amount)
+			self._tokenContract.methods.approve(opts.from,amount)
 			.send(opts)
 			   .on('error', function(error){ console.log("approve error",error) })
 			.on('transactionHash', function(transactionHash){
