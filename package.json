@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "web3": "^1.0.0",
+    "scrypt": "^6.0.3",
+    "web3": "^1.0.0-beta.48",
     "web3-provider-engine": "^14.1.0"
   },
   "repository": {
