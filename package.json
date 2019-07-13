@@ -7,9 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "lodash": "^4.17.14",
+    "querystringify": ">=2.0.0",
     "scrypt": "^6.0.3",
-    "web3": "^1.0.0-beta.51",
-	"querystringify": ">=2.0.0"
+    "web3": "^1.0.0-beta.51"
   },
   "repository": {
     "type": "git",

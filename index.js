@@ -52,7 +52,7 @@ function CampaignManager(web3) {
 					reject(error);
 			   })
 			.once('transactionHash', function(transactionHash){debug("createCampaign transactionHash",transactionHash) })
-			var id = receipt.logs[0].topics[1];
+			var id = receipt.events.CampaignCreated.returnValues.id;
 			var c = await self.getCampaign(id);
 			resolve(c) ;
 			
@@ -107,7 +107,7 @@ function CampaignManager(web3) {
 			   })
 			.on('transactionHash', function(transactionHash){debug("createCampaignYt transactionHash",transactionHash) })
 			.on('receipt', async (receipt) => {
-				var id = receipt.logs[0].topics[1];
+				var id = receipt.events.CampaignCreated.returnValues.id
 				var c = await self.getCampaign(id);
 				resolve(c);
 				debug(receipt.transactionHash,"confirmed campaign created",id);
@@ -157,7 +157,7 @@ function CampaignManager(web3) {
 				})
 			.on('transactionHash', function(transactionHash){debug("modCampaign transactionHash",transactionHash) })
 			.on('receipt', function(receipt){
-				var id = receipt.logs[0].topics[1];
+				var id = receipt.events.CampaignCreated.returnValues.id
 				resolve(id);
 				debug(receipt.transactionHash,"confirmed campaign modified",id);
 			})
@@ -278,7 +278,7 @@ function CampaignManager(web3) {
 			   })
 			.on('transactionHash', function(transactionHash){debug("applyCampaign transactionHash",transactionHash) })
 			.on('receipt', async (receipt) => {
-				var id = receipt.logs[0].topics[2];
+				var id = receipt.events.CampaignApplied.returnValues.prom;
 				var prom = await self.getProm(id);
 				resolve(prom);
 				
