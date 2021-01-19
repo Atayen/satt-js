@@ -11,7 +11,8 @@
     "querystringify": ">=2.0.0",
     "scrypt": "^6.0.3",
     "web3": "^1.0.0",
-    "elliptic": ">=6.5.3"
+    "elliptic": ">=6.5.3",
+    "minimist": ">=0.2.1"
   },
   "repository": {
     "type": "git",
